@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["node_modules/swagger-ui-dist/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api-docs/(.*)",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/health",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/app.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/app.js"
+    }
+  ]
+}
