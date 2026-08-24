@@ -1,33 +1,39 @@
-EventPulse - Event Management Backend API
+# EventPulse - Event Management Backend API
+
 EventPulse is a backend project for managing events using Node.js, Express, MongoDB, and Socket.io.
 
-The project includes:
+## Features
 
-User registration and login using JWT
-Admin and attendee roles
-Categories management
-Events management
-Event filtering, pagination, sorting, and search
-Event registration
-Event capacity checking
-Real-time announcements using Socket.io
-Error handling and validation
-Automated tests
-Swagger API documentation
-Technologies
-Node.js
-Express.js
-MongoDB
-Mongoose
-Socket.io
-JWT
-bcrypt
-express-validator
-Jest
-Supertest
-mongodb-memory-server
-Swagger
-Project Structure
+* User registration and login using JWT
+* Admin and attendee roles
+* Categories management
+* Events management
+* Event filtering, pagination, sorting, and search
+* Event registration
+* Event capacity checking
+* Real-time announcements using Socket.io
+* Error handling and validation
+* Automated tests
+* Swagger API documentation
+
+## Technologies
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* Socket.io
+* JWT
+* bcrypt
+* express-validator
+* Jest
+* Supertest
+* mongodb-memory-server
+* Swagger
+
+## Project Structure
+
+```text
 EventPulse/
 │
 ├── app.js
@@ -73,176 +79,264 @@ EventPulse/
 ├── swagger/
 │   └── swagger.js
 │
-├── seed.js 
+├── seed.js
 │
 ├── tests/
 │   ├── unit/
 │   └── integration/
 │
 └── postman/
-Installation
-First install the project dependencies:
+```
 
+## Installation
+
+Install the project dependencies:
+
+```bash
 npm install
-Create a .env file and add the required environment variables.
+```
 
-Then run the seed:
+Create a `.env` file and add the required environment variables.
 
+Run the seed script:
+
+```bash
 npm run seed
-To start the project normally:
+```
 
+Start the project normally:
+
+```bash
 npm start
-To start it using nodemon:
+```
 
+Start the project using nodemon:
+
+```bash
 npm run dev
-Server
-The server runs on:
+```
 
+## Server
+
+Local server:
+
+```text
 http://localhost:5000
+```
+
 Swagger documentation:
 
+```text
 http://localhost:5000/api-docs
+```
+
 Health check:
 
+```text
 http://localhost:5000/health
-API Routes
-Authentication
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/auth/me
-Categories
-GET    /api/categories
-POST   /api/categories
-PATCH  /api/categories/:id
-DELETE /api/categories/:id
-Events
-GET    /api/events
-POST   /api/events
-GET    /api/events/:id
-PATCH  /api/events/:id
-DELETE /api/events/:id
-Registrations
-POST   /api/events/:eventId/register
-GET    /api/registrations/me
-DELETE /api/registrations/:id
-Announcements
-GET  /api/events/:eventId/announcements
-POST /api/events/:eventId/announcements
-Health
-GET /health
-Event Filtering
+```
+
+## Live Deployment
+
+Live deployment:
+
+```text
+https://event-pluse.vercel.app
+```
+
+Swagger documentation:
+
+```text
+https://event-pluse.vercel.app/api-docs
+```
+
+Health check:
+
+```text
+https://event-pluse.vercel.app/health
+```
+
+## API Routes
+
+| Method | Endpoint                             | Description                      | Access        |
+| ------ | ------------------------------------ | -------------------------------- | ------------- |
+| POST   | `/api/auth/register`                 | Register a new user              | Public        |
+| POST   | `/api/auth/login`                    | Login                            | Public        |
+| GET    | `/api/auth/me`                       | Get current user                 | Authenticated |
+| GET    | `/api/categories`                    | List categories                  | Public        |
+| POST   | `/api/categories`                    | Create category                  | Admin         |
+| PATCH  | `/api/categories/:id`                | Update category                  | Admin         |
+| DELETE | `/api/categories/:id`                | Delete category                  | Admin         |
+| GET    | `/api/events`                        | List events                      | Public        |
+| POST   | `/api/events`                        | Create event                     | Admin         |
+| GET    | `/api/events/:id`                    | Get event                        | Public        |
+| PATCH  | `/api/events/:id`                    | Update event                     | Admin         |
+| DELETE | `/api/events/:id`                    | Delete event                     | Admin         |
+| POST   | `/api/events/:eventId/register`      | Register for event               | Authenticated |
+| GET    | `/api/registrations/me`              | Get current user's registrations | Authenticated |
+| DELETE | `/api/registrations/:id`             | Cancel registration              | Authenticated |
+| GET    | `/api/events/:eventId/announcements` | Get announcement history         | Public        |
+| POST   | `/api/events/:eventId/announcements` | Create announcement              | Admin         |
+| GET    | `/health`                            | Health check                     | Public        |
+
+## Event Filtering
+
 The events endpoint supports:
 
-category
-city
-dateFrom
-dateTo
-page
-limit
-sort
-search
+* `category`
+* `city`
+* `dateFrom`
+* `dateTo`
+* `page`
+* `limit`
+* `sort`
+* `search`
+
 Example:
 
+```text
 GET /api/events?city=Cairo
+```
+
 The response includes the total number of events, current page, total pages, and event data.
 
-Authentication
+## Authentication
+
 The project uses JWT authentication.
 
 There are two roles:
 
-Admin
-Attendee
-Some operations are available only for admins, such as creating, updating, and deleting events and categories.
+* Admin
+* Attendee
 
-Event Registration
+Some operations are available only to admins, such as creating, updating, and deleting events and categories.
+
+## Event Registration
+
 Users can register for events.
 
 The project checks the event capacity before creating a registration.
 
-It also protects the registration count from race conditions by using an atomic update.
+The registration count is protected against race conditions using an atomic database update.
 
 If creating the registration fails after increasing the registration count, the count is rolled back.
 
-Announcements
+## Announcements
+
 Admins can send announcements to an event.
 
 Announcements are:
 
-Saved in MongoDB.
-Sent to users connected to the event room using Socket.io.
-Users can also request previous announcements through the API.
+* Saved in MongoDB
+* Sent to users connected to the event room using Socket.io
+* Available through the announcement history API
 
-Validation and Error Handling
-The project uses express-validator to validate incoming data.
+Users can request previous announcements through the API.
 
-Invalid requests return a 422 response with validation errors.
+## Validation and Error Handling
+
+The project uses `express-validator` to validate incoming data.
+
+Invalid requests return a `422` response with validation errors.
 
 The project also uses:
 
-AppError
-asyncHandler
-Central error handling middleware
-Testing
-Run the tests using:
+* `AppError`
+* `asyncHandler`
+* Central error handling middleware
 
+## Testing
+
+Run the complete test suite using:
+
+```bash
 npm test
-The project includes:
+```
 
-Unit Tests
-Tests for:
+The project includes unit and integration tests.
 
-AppError
-asyncHandler
-Integration Tests
-Tests for the Events API, including:
+### Unit Tests
 
-Creating an event
-Checking admin authorization
-Listing events
-Filtering events by city
-Listing events without filters
-Search with no results
-Getting a missing event
-The integration tests use mongodb-memory-server, so they do not need the real MongoDB database.
+Tests cover:
 
-Test Result
-After running:
+* `AppError`
+* `asyncHandler`
 
-npm test
+### Integration Tests
+
+Tests cover the Events API, including:
+
+* Creating an event
+* Checking admin authorization
+* Listing events
+* Filtering events by city
+* Listing events without filters
+* Searching with no results
+* Getting a missing event
+
+The integration tests use `mongodb-memory-server`, so they do not require the real MongoDB database.
+
+### Test Result
+
+```text
 Test Suites: 3 passed, 3 total
 Tests:       37 passed, 37 total
 Snapshots:   0 total
 Time:        71.246 s
 Ran all test suites.
-Seed Data
+```
+
+## Seed Data
+
 The seed script creates:
 
-Sample categories
-Sample events
-An admin user
+* Sample categories
+* Sample events
+* An admin user
+
 Run it with:
 
+```bash
 npm run seed
-Default admin:
+```
+
+Default admin credentials:
+
+```text
 EMAIL=admin@eventpulse.com
-PASSWORD=123456
-These values can be changed using the environment variables.
+PASSWORD=Test123456
+```
 
-Deployment
-The project can be deployed using MongoDB Atlas and Vercel.
+These values can be changed using environment variables.
 
-Required environment variables include:
+## Environment Variables
 
+The project requires the following environment variables:
+
+```text
 NODE_ENV=development
 PORT=5000
 MONGO_URI=
 JWT_SECRET=
 JWT_EXPIRES_IN=7d
+```
 
-Postman
+**Never commit the `.env` file or real credentials to GitHub.**
+
+## Postman
+
+The Postman collection is available at:
+
+```text
 postman/EventPulse.postman_collection.json
+```
+
+The recommended Postman environment name is:
+
+```text
+EventPulse Dev
+```
 
 ## Release
 
-Version 1.0.0
+Version `1.0.0`
