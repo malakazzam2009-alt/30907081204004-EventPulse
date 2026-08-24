@@ -242,3 +242,7 @@ JWT_EXPIRES_IN=7d
 
 Postman
 postman/EventPulse.postman_collection.json
+
+## Release
+
+Version 1.0.0
