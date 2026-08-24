@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventPulse | Event & Conference Platform</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* Global Styles & Variables */
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-hover: #334155;
+      --accent-primary: #6366f1;
+      --accent-secondary: #ec4899;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Layout Containers */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text; 
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(236, 72, 153, 0.5);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .hero-title span {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text; /* تم إضافة الخاصية القياسية هنا */
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      background: var(--card-bg);
+      padding: 8px;
+      border-radius: var(--radius-md);
+      display: flex;
+      gap: 12px;
+      max-width: 700px;
+      margin: 0 auto 60px;
+      border: 1px solid var(--border-color);
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    /* Categories */
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .categories {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .category-chip {
+      background: var(--card-bg);
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    .category-chip.active,
+    .category-chip:hover {
+      background: var(--accent-primary);
+      color: #fff;
+      border-color: var(--accent-primary);
+    }
+
+    /* Events Grid */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 80px;
+    }
+
+    .event-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .event-card:hover {
+      transform: translateY(-6px);
+      background: var(--card-hover);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .event-banner {
+      height: 180px;
+      background: var(--accent-gradient);
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+    }
+
+    .badge {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .event-body {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .event-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .event-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .event-info {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+      margin-top: auto;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.2rem; }
+      .nav-links { display: none; }
+      
+      .search-bar {
+        flex-direction: column;
+        background: transparent;
+        border: none;
+        padding: 0;
+      }
+
+      .search-bar input {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="container">
+    <nav class="navbar">
+      <a href="#" class="logo">EventPulse</a>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Categories</a></li>
+        <li><a href="#">About Us</a></li>
+      </ul>
+      <a href="#" class="btn btn-primary">Sign In</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="container hero">
+    <h1 class="hero-title">Discover & Attend Top <span>Events</span> Near You</h1>
+    <p class="hero-subtitle">EventPulse connects founders, tech enthusiasts, and creators in one place. Don't miss your chance to join.</p>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search events, conferences, or cities...">
+      <button class="btn btn-primary">Search</button>
+    </div>
+  </section>
+
+  <!-- Content Section -->
+  <main class="container">
+    <div class="section-title">
+      <h2>Upcoming Events</h2>
+    </div>
+
+    <!-- Categories Filters -->
+    <div class="categories">
+      <a href="#" class="category-chip active">All</a>
+      <a href="#" class="category-chip">Technology</a>
+      <a href="#" class="category-chip">Music</a>
+      <a href="#" class="category-chip">Business</a>
+      <a href="#" class="category-chip">Sports</a>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="events-grid">
+      
+      <!-- Event 1 -->
+      <article class="event-card">
+        <div class="event-banner">
+          <span class="badge">Technology</span>
+        </div>
+        <div class="event-body">
+          <h3 class="event-title">React Summit 2026</h3>
+          <p class="event-desc">A full day of talks and workshops on modern frontend engineering.</p>
+          <div class="event-info">
+            <span>📍 Cairo</span>
+            <span>📅 Sep 15, 2026</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Event 2 -->
+      <article class="event-card">
+        <div class="event-banner" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">
+          <span class="badge">Music</span>
+        </div>
+        <div class="event-body">
+          <h3 class="event-title">Indie Music Night</h3>
+          <p class="event-desc">Live performances from rising local independent bands.</p>
+          <div class="event-info">
+            <span>📍 Alexandria</span>
+            <span>📅 Aug 20, 2026</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Event 3 -->
+      <article class="event-card">
+        <div class="event-banner" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">
+          <span class="badge">Business</span>
+        </div>
+        <div class="event-body">
+          <h3 class="event-title">Startup Networking Mixer</h3>
+          <p class="event-desc">Connect with investors, founders, and tech leaders in your area.</p>
+          <div class="event-info">
+            <span>📍 Cairo</span>
+            <span>📅 Oct 01, 2026</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 EventPulse. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
