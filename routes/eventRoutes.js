@@ -249,8 +249,6 @@ router.post(
  *     summary: Get previous announcements for an event
  *     tags:
  *       - Events
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: eventId
@@ -261,14 +259,11 @@ router.post(
  *     responses:
  *       200:
  *         description: List of announcements
- *       401:
- *         description: Authentication required
  *       404:
  *         description: Event not found
  */
 router.get(
   '/:eventId/announcements',
-  requireAuth,
   getAnnouncements
 );
 
