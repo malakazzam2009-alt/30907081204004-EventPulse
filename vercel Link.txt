@@ -1,0 +1,11 @@
+Vercel Dashboard
+https://vercel.com/no-team-e521/30907081204004-eventpulse/deployments
+
+Vercel Link
+https://30907081204004-event-pulse.vercel.app/
+
+health
+https://30907081204004-event-pulse.vercel.app/health
+
+SwaggerLink
+https://30907081204004-event-pulse.vercel.app/api-docs
