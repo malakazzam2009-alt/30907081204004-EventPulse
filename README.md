@@ -141,19 +141,19 @@ http://localhost:5000/health
 Live deployment:
 
 ```text
-https://event-pluse.vercel.app
+https://30907081204004-event-pulse.vercel.app/
 ```
 
 Swagger documentation:
 
 ```text
-https://event-pluse.vercel.app/api-docs
+https://30907081204004-event-pulse.vercel.app/api-docs
 ```
 
 Health check:
 
 ```text
-https://event-pluse.vercel.app/health
+https://30907081204004-event-pulse.vercel.app/health
 ```
 
 ## API Routes
