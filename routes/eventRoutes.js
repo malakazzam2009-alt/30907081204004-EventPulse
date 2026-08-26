@@ -78,6 +78,7 @@ router.get(
   listEvents
 );
 
+
 /**
  * @swagger
  * /api/events/{id}:
