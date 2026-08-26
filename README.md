@@ -173,7 +173,7 @@ https://30907081204004-event-pulse.vercel.app/health
 | PATCH  | `/api/events/:id`                    | Update event                     | Admin         |
 | DELETE | `/api/events/:id`                    | Delete event                     | Admin         |
 | POST   | `/api/events/:eventId/register`      | Register for event               | Authenticated |
-| GET    | `/api/registrations/me`              | Get current user's registrations | Authenticated |
+| GET    | `/api/registrations/my`              | Get current user's registrations | Authenticated |
 | DELETE | `/api/registrations/:id`             | Cancel registration              | Authenticated |
 | GET    | `/api/events/:eventId/announcements` | Get announcement history         | Public        |
 | POST   | `/api/events/:eventId/announcements` | Create announcement              | Admin         |
