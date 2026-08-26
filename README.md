@@ -185,11 +185,10 @@ The events endpoint supports:
 
 * `category`
 * `city`
-* `dateFrom`
-* `dateTo`
+* `startDate` / `endDate`
 * `page`
 * `limit`
-* `sort`
+* `sortBy` / `order`
 * `search`
 
 Example:
@@ -319,7 +318,11 @@ PORT=5000
 MONGO_URI=
 JWT_SECRET=
 JWT_EXPIRES_IN=7d
+SEED_ADMIN_EMAIL=
+SEED_ADMIN_PASSWORD=
 ```
+
+`SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` are required for `npm run seed` — the seed script will throw an error if they are missing.
 
 **Never commit the `.env` file or real credentials to GitHub.**
 
@@ -328,7 +331,7 @@ JWT_EXPIRES_IN=7d
 The Postman collection is available at:
 
 ```text
-postman/EventPulse.postman_collection.json
+postman/EventPluse.postman_collection.json
 ```
 
 The recommended Postman environment name is:
