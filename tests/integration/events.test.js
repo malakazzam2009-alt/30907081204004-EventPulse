@@ -27,7 +27,7 @@ beforeAll(async () => {
 
   mongod = await MongoMemoryServer.create({
     binary: {
-      version: '6.0.4',
+      version: '7.0.14',
     },
     instance: {
       instanceStartupTimeoutMs: 600000,
