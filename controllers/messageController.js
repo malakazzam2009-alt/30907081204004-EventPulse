@@ -3,18 +3,15 @@ const Message = require('../models/Message');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
 
-// @desc    Admin broadcasts an announcement to one event's room, and it is saved
-// @route   POST /api/events/:eventId/announcements
-// @access  Private/Admin
-exports.createAnnouncement = asyncHandler(async (req, res) => {
-
-  // Get the event ID and announcement text.
-  const { eventId } = req.params;
-  const { text } = req.body;
-
+// Shared core logic: create the announcement, persist it,
+// and broadcast it over Socket.io to the event's room.
+async function createAnnouncementCore(req, res, eventId, text) {
   // Check that the event exists.
   const event = await Event.findById(eventId);
-  if (!event) throw new AppError('Event not found.', 404);
+
+  if (!event) {
+    throw new AppError('Event not found.', 404);
+  }
 
   // Save the announcement in the database.
   const message = await Message.create({
@@ -41,26 +38,49 @@ exports.createAnnouncement = asyncHandler(async (req, res) => {
   }
 
   // Return the saved announcement.
-  res.status(201).json({ success: true, data: message });
-});
+  res.status(201).json({
+    success: true,
+    data: message,
+  });
+}
 
-// @desc    Get previous announcements for an event, ordered by time
-// @route   GET /api/events/:eventId/announcements
-// @access  Private
-exports.getAnnouncements = asyncHandler(async (req, res) => {
-
-  // Get the event ID from the request.
+// @desc    Admin broadcasts an announcement to one event's room
+// @route   POST /api/events/:eventId/announcements
+// @access  Private/Admin
+exports.createAnnouncement = asyncHandler(async (req, res) => {
+  // Get the event ID from the URL.
   const { eventId } = req.params;
 
-  // Check that the event exists.
-  const event = await Event.findById(eventId);
-  if (!event) throw new AppError('Event not found.', 404);
+  // Get the announcement text from the body.
+  const { text } = req.body;
 
-  // Get all announcements ordered by creation time.
-  const messages = await Message.find({ event: eventId })
+  await createAnnouncementCore(req, res, eventId, text);
+});
+
+// @desc    Admin broadcasts an announcement to one event's room
+// @route   POST /api/announcements
+// @access  Private/Admin
+exports.createAnnouncementFlat = asyncHandler(async (req, res) => {
+  // Get the event ID and announcement text from the body.
+  const { eventId, text } = req.body;
+
+  await createAnnouncementCore(req, res, eventId, text);
+});
+
+// @desc    Get all announcements from all events
+// @route   GET /api/announcements
+// @access  Public
+exports.getAnnouncements = asyncHandler(async (req, res) => {
+  // Get all announcements.
+  const messages = await Message.find()
+    .populate('event', 'name date city venue')
     .populate('sender', 'name email role')
     .sort('createdAt');
 
-  // Return the announcements with their count.
-  res.status(200).json({ success: true, count: messages.length, data: messages });
+  // Return all announcements with their count.
+  res.status(200).json({
+    success: true,
+    count: messages.length,
+    data: messages,
+  });
 });
