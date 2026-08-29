@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
+const announcementRoutes = require('./routes/announcementRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
@@ -94,6 +95,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/registrations', registrationRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 /**
  * Root route
