@@ -27,6 +27,7 @@ const {
   eventUpdateRules,
   eventQueryRules,
   allowedEventQueryParams,
+  registrationRules,
   messageRules,
 } = require('../middleware/validators');
 
@@ -77,6 +78,7 @@ router.get(
   validate,
   listEvents
 );
+
 
 /**
  * @swagger
@@ -239,6 +241,8 @@ router.delete(
 router.post(
   '/:eventId/register',
   requireAuth,
+  registrationRules,
+  validate,
   registerForEvent
 );
 

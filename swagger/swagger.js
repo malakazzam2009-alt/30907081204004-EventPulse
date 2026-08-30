@@ -17,7 +17,7 @@ const options = {
         description: 'Development Server',
       },
       {
-        url: 'https://event-pluse.vercel.app',
+        url: 'https://30907081204004-event-pulse.vercel.app',
         description: 'Production Server (Vercel)',
       },
     ],
