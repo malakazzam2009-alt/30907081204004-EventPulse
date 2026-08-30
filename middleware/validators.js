@@ -301,8 +301,24 @@ const categoryUpdateRules = [
    MESSAGE
 ========================= */
 
-// Validate announcement message data.
+// Validate announcement message data (used on the nested route,
+// where eventId already comes from the URL param).
 const messageRules = [
+  body('text')
+    .trim()
+    .notEmpty()
+    .withMessage('Message text is required'),
+];
+
+// Validate announcement message data on the flat route
+// POST /api/announcements, where eventId is sent in the body.
+const announcementCreateRules = [
+  body('eventId')
+    .notEmpty()
+    .withMessage('eventId is required')
+    .isMongoId()
+    .withMessage('Invalid eventId format'),
+
   body('text')
     .trim()
     .notEmpty()
@@ -333,4 +349,5 @@ module.exports = {
   categoryUpdateRules,
 
   messageRules,
+  announcementCreateRules,
 };

@@ -1,5 +1,5 @@
 {
-  "name": "3090708120400-EventPulse",
+  "name": "30907081204004-EventPulse",
   "version": "1.0.0",
   "description": "EventPulse - Event Management Backend API (Node.js, Express, MongoDB, Socket.io)",
   "main": "server.js",

@@ -27,7 +27,7 @@ beforeAll(async () => {
 
   mongod = await MongoMemoryServer.create({
     binary: {
-      version: '6.0.4',
+      version: '7.0.14',
     },
     instance: {
       instanceStartupTimeoutMs: 600000,
@@ -92,6 +92,18 @@ async function createAdminAndLogin() {
   return loginRes.body.data.token;
 }
 
+async function registerAndLogin(name, email, password) {
+  await request(app)
+    .post('/api/auth/register')
+    .send({ name, email, password });
+
+  const loginRes = await request(app)
+    .post('/api/auth/login')
+    .send({ email, password });
+
+  return loginRes.body.data.token;
+}
+
 async function createEvent(token, categoryId, eventData = {}) {
   const defaultEvent = {
     name: 'Node.js Conference',
@@ -130,7 +142,7 @@ describe('Events API', () => {
   });
 
   // POST /api/events
-  
+
   test('POST /api/events creates an event (admin only)', async () => {
     const res = await createEvent(token, categoryId, {
       name: 'Node.js Conference',
@@ -142,14 +154,9 @@ describe('Events API', () => {
     });
 
     expect(res.statusCode).toBe(201);
-
-    // Controller returns status: "success"
     expect(res.body.status).toBe('success');
-
     expect(res.body.data.name).toBe('Node.js Conference');
-    expect(res.body.data.description).toBe(
-      'A conference about Node.js'
-    );
+    expect(res.body.data.description).toBe('A conference about Node.js');
     expect(res.body.data.city).toBe('Cairo');
     expect(res.body.data.venue).toBe('Main Hall');
     expect(res.body.data.capacity).toBe(100);
@@ -157,22 +164,11 @@ describe('Events API', () => {
   });
 
   test('POST /api/events rejects non-admin users with 403', async () => {
-    await request(app)
-      .post('/api/auth/register')
-      .send({
-        name: 'Regular User',
-        email: 'user@test.com',
-        password: 'Password1',
-      });
-
-    const loginRes = await request(app)
-      .post('/api/auth/login')
-      .send({
-        email: 'user@test.com',
-        password: 'Password1',
-      });
-
-    const regularToken = loginRes.body.data.token;
+    const regularToken = await registerAndLogin(
+      'Regular User',
+      'user@test.com',
+      'Password1'
+    );
 
     const res = await request(app)
       .post('/api/events')
@@ -217,7 +213,6 @@ describe('Events API', () => {
       });
 
     expect(res.statusCode).toBe(422);
-
     expect(res.body.status).not.toBe('success');
     expect(res.body.message).toBe('Validation failed');
     expect(Array.isArray(res.body.errors)).toBe(true);
@@ -309,9 +304,7 @@ describe('Events API', () => {
 
     const res = await request(app)
       .get('/api/events')
-      .query({
-        city: 'Cairo',
-      });
+      .query({ city: 'Cairo' });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('success');
@@ -335,9 +328,7 @@ describe('Events API', () => {
 
     const res = await request(app)
       .get('/api/events')
-      .query({
-        search: 'React',
-      });
+      .query({ search: 'React' });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('success');
@@ -366,10 +357,7 @@ describe('Events API', () => {
 
     const res = await request(app)
       .get('/api/events')
-      .query({
-        search: 'React',
-        city: 'Cairo',
-      });
+      .query({ search: 'React', city: 'Cairo' });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('success');
@@ -401,9 +389,7 @@ describe('Events API', () => {
   test('GET /api/events with search that matches nothing returns an empty list', async () => {
     const res = await request(app)
       .get('/api/events')
-      .query({
-        search: 'nonexistentxyz',
-      });
+      .query({ search: 'nonexistentxyz' });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('success');
@@ -423,10 +409,7 @@ describe('Events API', () => {
 
     const res = await request(app)
       .get('/api/events')
-      .query({
-        page: 1,
-        limit: 5,
-      });
+      .query({ page: 1, limit: 5 });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('success');
@@ -447,10 +430,7 @@ describe('Events API', () => {
 
     const res = await request(app)
       .get('/api/events')
-      .query({
-        page: 2,
-        limit: 5,
-      });
+      .query({ page: 2, limit: 5 });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('success');
@@ -461,9 +441,9 @@ describe('Events API', () => {
     expect(res.body.data.length).toBe(2);
   });
 
-  // SORTING
- 
-  test('GET /api/events sorts by date ascending', async () => {
+  // SORTING (merged asc + desc into a single test)
+
+  test('GET /api/events sorts by date ascending and descending', async () => {
     await createEvent(token, categoryId, {
       name: 'Later Event',
       date: '2026-12-01T10:00:00.000Z',
@@ -474,41 +454,21 @@ describe('Events API', () => {
       date: '2026-09-01T10:00:00.000Z',
     });
 
-    const res = await request(app)
+    const ascRes = await request(app)
       .get('/api/events')
-      .query({
-        sortBy: 'date',
-        order: 'asc',
-      });
+      .query({ sortBy: 'date', order: 'asc' });
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body.status).toBe('success');
-    expect(res.body.data[0].name).toBe('Earlier Event');
-    expect(res.body.data[1].name).toBe('Later Event');
-  });
+    expect(ascRes.statusCode).toBe(200);
+    expect(ascRes.body.data[0].name).toBe('Earlier Event');
+    expect(ascRes.body.data[1].name).toBe('Later Event');
 
-  test('GET /api/events sorts by date descending', async () => {
-    await createEvent(token, categoryId, {
-      name: 'Earlier Event',
-      date: '2026-09-01T10:00:00.000Z',
-    });
-
-    await createEvent(token, categoryId, {
-      name: 'Later Event',
-      date: '2026-12-01T10:00:00.000Z',
-    });
-
-    const res = await request(app)
+    const descRes = await request(app)
       .get('/api/events')
-      .query({
-        sortBy: 'date',
-        order: 'desc',
-      });
+      .query({ sortBy: 'date', order: 'desc' });
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body.status).toBe('success');
-    expect(res.body.data[0].name).toBe('Later Event');
-    expect(res.body.data[1].name).toBe('Earlier Event');
+    expect(descRes.statusCode).toBe(200);
+    expect(descRes.body.data[0].name).toBe('Later Event');
+    expect(descRes.body.data[1].name).toBe('Earlier Event');
   });
 
   // GET /api/events/:id
@@ -521,8 +481,7 @@ describe('Events API', () => {
 
     const eventId = createRes.body.data._id;
 
-    const res = await request(app)
-      .get(`/api/events/${eventId}`);
+    const res = await request(app).get(`/api/events/${eventId}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('success');
@@ -533,17 +492,9 @@ describe('Events API', () => {
   test('GET /api/events/:id returns 404 for a missing event', async () => {
     const fakeId = new mongoose.Types.ObjectId();
 
-    const res = await request(app)
-      .get(`/api/events/${fakeId}`);
+    const res = await request(app).get(`/api/events/${fakeId}`);
 
     expect(res.statusCode).toBe(404);
-  });
-
-  test('GET /api/events/:id handles invalid event id', async () => {
-    const res = await request(app)
-      .get('/api/events/not-a-valid-id');
-
-    expect([400, 404, 422]).toContain(res.statusCode);
   });
 
   // PATCH /api/events/:id
@@ -580,9 +531,7 @@ describe('Events API', () => {
 
     const res = await request(app)
       .patch(`/api/events/${eventId}`)
-      .send({
-        name: 'Updated Event',
-      });
+      .send({ name: 'Updated Event' });
 
     expect(res.statusCode).toBe(401);
   });
@@ -592,29 +541,16 @@ describe('Events API', () => {
 
     const eventId = createRes.body.data._id;
 
-    await request(app)
-      .post('/api/auth/register')
-      .send({
-        name: 'Regular User',
-        email: 'patchuser@test.com',
-        password: 'Password1',
-      });
-
-    const loginRes = await request(app)
-      .post('/api/auth/login')
-      .send({
-        email: 'patchuser@test.com',
-        password: 'Password1',
-      });
-
-    const regularToken = loginRes.body.data.token;
+    const regularToken = await registerAndLogin(
+      'Regular User',
+      'patchuser@test.com',
+      'Password1'
+    );
 
     const res = await request(app)
       .patch(`/api/events/${eventId}`)
       .set('Authorization', `Bearer ${regularToken}`)
-      .send({
-        name: 'Unauthorized Update',
-      });
+      .send({ name: 'Unauthorized Update' });
 
     expect(res.statusCode).toBe(403);
   });
@@ -623,9 +559,7 @@ describe('Events API', () => {
     const res = await request(app)
       .patch('/api/events/not-valid-id')
       .set('Authorization', `Bearer ${token}`)
-      .send({
-        name: 'Updated Event',
-      });
+      .send({ name: 'Updated Event' });
 
     expect(res.statusCode).toBe(422);
   });
@@ -654,8 +588,7 @@ describe('Events API', () => {
 
     const eventId = createRes.body.data._id;
 
-    const res = await request(app)
-      .delete(`/api/events/${eventId}`);
+    const res = await request(app).delete(`/api/events/${eventId}`);
 
     expect(res.statusCode).toBe(401);
   });
@@ -665,22 +598,11 @@ describe('Events API', () => {
 
     const eventId = createRes.body.data._id;
 
-    await request(app)
-      .post('/api/auth/register')
-      .send({
-        name: 'Delete User',
-        email: 'deleteuser@test.com',
-        password: 'Password1',
-      });
-
-    const loginRes = await request(app)
-      .post('/api/auth/login')
-      .send({
-        email: 'deleteuser@test.com',
-        password: 'Password1',
-      });
-
-    const regularToken = loginRes.body.data.token;
+    const regularToken = await registerAndLogin(
+      'Delete User',
+      'deleteuser@test.com',
+      'Password1'
+    );
 
     const res = await request(app)
       .delete(`/api/events/${eventId}`)

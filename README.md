@@ -1,33 +1,41 @@
-EventPulse - Event Management Backend API
-EventPulse is a backend project for managing events using Node.js, Express, MongoDB, and Socket.io.
+# EventPulse — Event Management API
 
-The project includes:
+EventPulse is a REST API for managing events, users, registrations, and announcements.
 
-User registration and login using JWT
-Admin and attendee roles
-Categories management
-Events management
-Event filtering, pagination, sorting, and search
-Event registration
-Event capacity checking
-Real-time announcements using Socket.io
-Error handling and validation
-Automated tests
-Swagger API documentation
-Technologies
-Node.js
-Express.js
-MongoDB
-Mongoose
-Socket.io
-JWT
-bcrypt
-express-validator
-Jest
-Supertest
-mongodb-memory-server
-Swagger
-Project Structure
+The project uses JWT authentication, MongoDB, and Socket.io for real-time announcements.
+
+## Features
+
+* User registration and login
+* JWT authentication with `admin` and `attendee` roles
+* Categories CRUD
+* Events CRUD
+* Event filtering, search, pagination, and sorting
+* Event registration with capacity control
+* Prevent duplicate registrations
+* Real-time announcements using Socket.io
+* Centralized error handling
+* Input validation
+* Unit and integration tests
+* Swagger and Postman documentation
+* Health check endpoint
+* Deployment on Vercel with MongoDB Atlas
+
+## Tech Stack
+
+* Node.js
+* Express.js
+* MongoDB & Mongoose
+* Socket.io
+* JWT
+* bcrypt
+* express-validator
+* Jest & Supertest
+* Swagger
+
+## Project Structure
+
+```text
 EventPulse/
 │
 ├── app.js
@@ -54,6 +62,7 @@ EventPulse/
 │   ├── eventRoutes.js
 │   ├── categoryRoutes.js
 │   ├── registrationRoutes.js
+│   ├── announcementRoutes.js
 │   └── healthRoutes.js
 │
 ├── middleware/
@@ -73,176 +82,181 @@ EventPulse/
 ├── swagger/
 │   └── swagger.js
 │
-├── seed.js 
+├── seed.js
 │
 ├── tests/
 │   ├── unit/
 │   └── integration/
 │
 └── postman/
-Installation
-First install the project dependencies:
+```
 
+## Installation
+
+```bash
+git clone https://github.com/malakazzam2009-alt/30907081204004-EventPulse
+cd 30907081204004-EventPulse
 npm install
-Create a .env file and add the required environment variables.
+```
 
-Then run the seed:
+Create a `.env` file:
 
+```env
+NODE_ENV=development
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=7d
+```
+
+Run the seed:
+
+```bash
 npm run seed
-To start the project normally:
+```
 
+Start the server:
+
+```bash
 npm start
-To start it using nodemon:
+```
 
+For development:
+
+```bash
 npm run dev
-Server
-The server runs on:
+```
 
-http://localhost:5000
-Swagger documentation:
+Run tests:
 
-http://localhost:5000/api-docs
-Health check:
+```bash
+npm test
+```
 
-http://localhost:5000/health
-API Routes
-Authentication
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/auth/me
-Categories
-GET    /api/categories
-POST   /api/categories
-PATCH  /api/categories/:id
-DELETE /api/categories/:id
-Events
-GET    /api/events
-POST   /api/events
-GET    /api/events/:id
-PATCH  /api/events/:id
-DELETE /api/events/:id
-Registrations
-POST   /api/events/:eventId/register
-GET    /api/registrations/me
-DELETE /api/registrations/:id
-Announcements
-GET  /api/events/:eventId/announcements
-POST /api/events/:eventId/announcements
-Health
+## Main API Routes
+
+### Authentication
+
+| Method | Endpoint             | Access  |
+| ------ | -------------------- | ------- |
+| POST   | `/api/auth/register` | Public  |
+| POST   | `/api/auth/login`    | Public  |
+| GET    | `/api/auth/me`       | Private |
+
+### Categories
+
+| Method | Endpoint              | Access |
+| ------ | --------------------- | ------ |
+| GET    | `/api/categories`     | Public |
+| POST   | `/api/categories`     | Admin  |
+| PATCH  | `/api/categories/:id` | Admin  |
+| DELETE | `/api/categories/:id` | Admin  |
+
+### Events
+
+| Method | Endpoint                        | Access  |
+| ------ | ------------------------------- | ------- |
+| GET    | `/api/events`                   | Public  |
+| GET    | `/api/events/:id`               | Public  |
+| POST   | `/api/events`                   | Admin   |
+| PATCH  | `/api/events/:id`               | Admin   |
+| DELETE | `/api/events/:id`               | Admin   |
+| POST   | `/api/events/:eventId/register` | Private |
+
+### Registrations
+
+| Method | Endpoint                 | Access  |
+| ------ | ------------------------ | ------- |
+| GET    | `/api/registrations/my`  | Private |
+| DELETE | `/api/registrations/:id` | Private |
+
+### Announcements
+
+| Method | Endpoint             | Access |
+| ------ | -------------------- | ------ |
+| GET    | `/api/announcements` | Public |
+| POST   | `/api/announcements` | Admin  |
+
+### Health
+
+```text
 GET /health
-Event Filtering
-The events endpoint supports:
+```
 
-category
-city
-dateFrom
-dateTo
-page
-limit
-sort
-search
+## Event Features
+
+Events support:
+
+* Category filtering
+* City filtering
+* Date filtering
+* Search
+* Pagination
+* Sorting
+
 Example:
 
+```text
 GET /api/events?city=Cairo
-The response includes the total number of events, current page, total pages, and event data.
+GET /api/events?search=react
+GET /api/events?page=1&limit=10
+```
 
-Authentication
-The project uses JWT authentication.
+## Authentication
+
+The API uses JWT authentication.
 
 There are two roles:
 
-Admin
-Attendee
-Some operations are available only for admins, such as creating, updating, and deleting events and categories.
+* `admin`
+* `attendee`
 
-Event Registration
-Users can register for events.
+Admin users can manage events, categories, and announcements.
 
-The project checks the event capacity before creating a registration.
+## Real-Time Announcements
 
-It also protects the registration count from race conditions by using an atomic update.
+Socket.io is used to send announcements to users inside a specific event room.
 
-If creating the registration fails after increasing the registration count, the count is rolled back.
+Announcements are also saved in MongoDB so users can view previous announcements.
 
-Announcements
-Admins can send announcements to an event.
+## Testing
 
-Announcements are:
+Run:
 
-Saved in MongoDB.
-Sent to users connected to the event room using Socket.io.
-Users can also request previous announcements through the API.
-
-Validation and Error Handling
-The project uses express-validator to validate incoming data.
-
-Invalid requests return a 422 response with validation errors.
-
-The project also uses:
-
-AppError
-asyncHandler
-Central error handling middleware
-Testing
-Run the tests using:
-
+```bash
 npm test
-The project includes:
+```
 
-Unit Tests
-Tests for:
+The project includes unit and integration tests.
 
-AppError
-asyncHandler
-Integration Tests
-Tests for the Events API, including:
+**35 tests passed successfully.**
 
-Creating an event
-Checking admin authorization
-Listing events
-Filtering events by city
-Listing events without filters
-Search with no results
-Getting a missing event
-The integration tests use mongodb-memory-server, so they do not need the real MongoDB database.
+## Swagger
 
-Test Result
-After running:
+API documentation is available at:
 
-npm test
-Test Suites: 3 passed, 3 total
-Tests:       37 passed, 37 total
-Snapshots:   0 total
-Time:        71.246 s
-Ran all test suites.
-Seed Data
-The seed script creates:
+```text
+/api-docs
+```
 
-Sample categories
-Sample events
-An admin user
-Run it with:
+## Deployment
 
-npm run seed
-Default admin:
-EMAIL=admin@eventpulse.com
-PASSWORD=123456
-These values can be changed using the environment variables.
+The API is deployed on Vercel with MongoDB Atlas.
 
-Deployment
-The project can be deployed using MongoDB Atlas and Vercel.
+```text
+https://30907081204004-event-pulse.vercel.app/
+```
 
-Required environment variables include:
+## Postman
 
-NODE_ENV=development
-PORT=5000
-MONGO_URI=
-JWT_SECRET=
-JWT_EXPIRES_IN=7d
+The Postman collection and environment are available in:
 
-Postman
-postman/EventPulse.postman_collection.json
+```text
+postman/
+├── EventPluse.postman_collection.json
+└── EventPluse dev.postman_environment.json
+```
 
 ## Release
 
-Version 1.0.0
+Version: **v1.0.0**
